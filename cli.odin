@@ -34,11 +34,16 @@ main :: proc() {
 
 
     in_file_name := shift(&args)
-    ttf_file_content: []u8
     if !strings.ends_with(in_file_name, ".ttf") {
         usage(program_name)
         // TODO: support other formats
         fmt.println("Error: font file does not end with .ttf")
+        os.exit(1)
+    }
+
+    ttf_file_content, success := os.read_entire_file_from_filename(in_file_name)
+    if !success {
+        fmt.printfln("Error: can not open the specified file_name `%s`", in_file_name)
         os.exit(1)
     }
 

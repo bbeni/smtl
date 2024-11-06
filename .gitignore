@@ -1,0 +1,7 @@
+smtl
+thirdparty/freetype/freetype-2.13.3/
+thirdparty/freetype/linux
+
+*.tar.xz*
+TAGS
+*.ttf
