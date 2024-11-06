@@ -1,6 +1,6 @@
-# Show Me The Letter
+# Show me the letters
 
-SMTL is i command line utility for inspecting font files and generating glyph-tables as png. (Not finished)
+smtl is i command line utility for inspecting font files and generating glyph-tables as png. (Not finished)
 
 ## Quickstart Linux
 
