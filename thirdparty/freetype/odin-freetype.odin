@@ -62,8 +62,6 @@ foreign freetype {
 Library :: distinct rawptr
 Face :: ^FaceRec_
 
-
-
 // The code below is partially auto-generated with (find, grep, sed, sort, uniq):
 //
 // find thirdparty/freetype/freetype-2.13.3-src -name *.h -exec cat {} + | grep -oP "typedef struct FT_.*\* .*" | sort | uniq | sed -n "s/^.*FT_\(\S*\)\*.*FT_\(\S*\);$/\/\/TODO: \2 :: ^\1\n\2 :: rawptr/p"
@@ -74,8 +72,8 @@ Face :: ^FaceRec_
 BitmapGlyph :: rawptr
 //TODO: CMap :: ^CMapRec_
 CMap :: rawptr
-//TODO: CharMap :: ^CharMapRec_
-CharMap :: rawptr
+CharMap :: ^CharMapRec_
+//DONE: CharMap :: rawptr
 //TODO: Driver :: ^DriverRec_
 Driver :: rawptr
 //TODO: Face_Internal :: ^Face_InternalRec_
@@ -123,6 +121,12 @@ SvgGlyph :: rawptr
 //TODO: WinFNT_Header :: ^WinFNT_HeaderRec_
 WinFNT_Header :: rawptr
 
+CharMapRec_ :: struct {
+    face: Face,
+    encoding: Encoding,
+    platform_id: c.ushort,
+    encoding_id: c.ushort,
+}
 
 GlyphSlotRec_ :: struct {
     library: Library,
@@ -225,10 +229,27 @@ Load :: enum c.int {
 
 
 Encoding :: enum c.uint32_t {
-    NONE = 0,
-    MS_SYMBOL = c.uint32_t('s') << 24 | c.uint32_t('y') << 16 | c.uint32_t('m') << 8 | c.uint32_t('b') << 0,
-    UNICODE = c.uint32_t('u') << 24 | c.uint32_t('n') << 16 | c.uint32_t('i') << 8 | c.uint32_t('c') << 0,
-    // TODO: add more encodings
+    NONE           = 0,
+    MS_SYMBOL      = c.uint32_t('s')<<24 | c.uint32_t('y')<<16 | c.uint32_t('m')<<8 | c.uint32_t('b')<<0,
+    UNICODE        = c.uint32_t('u')<<24 | c.uint32_t('n')<<16 | c.uint32_t('i')<<8 | c.uint32_t('c')<<0,
+    SJIS           = c.uint32_t('s')<<24 | c.uint32_t('j')<<16 | c.uint32_t('i')<<8 | c.uint32_t('s')<<0,
+    PRC            = c.uint32_t('g')<<24 | c.uint32_t('b')<<16 | c.uint32_t(' ')<<8 | c.uint32_t(' ')<<0,
+    BIG5           = c.uint32_t('b')<<24 | c.uint32_t('i')<<16 | c.uint32_t('g')<<8 | c.uint32_t('5')<<0,
+    WANSUNG        = c.uint32_t('w')<<24 | c.uint32_t('a')<<16 | c.uint32_t('n')<<8 | c.uint32_t('s')<<0,
+    JOHAB          = c.uint32_t('j')<<24 | c.uint32_t('o')<<16 | c.uint32_t('h')<<8 | c.uint32_t('a')<<0,
+    ADOBE_STANDARD = c.uint32_t('A')<<24 | c.uint32_t('D')<<16 | c.uint32_t('O')<<8 | c.uint32_t('B')<<0,
+    ADOBE_EXPERT   = c.uint32_t('A')<<24 | c.uint32_t('D')<<16 | c.uint32_t('B')<<8 | c.uint32_t('E')<<0,
+    ADOBE_CUSTOM   = c.uint32_t('A')<<24 | c.uint32_t('D')<<16 | c.uint32_t('B')<<8 | c.uint32_t('C')<<0,
+    ADOBE_LATIN_1  = c.uint32_t('l')<<24 | c.uint32_t('a')<<16 | c.uint32_t('t')<<8 | c.uint32_t('1')<<0,
+    OLD_LATIN_2    = c.uint32_t('l')<<24 | c.uint32_t('a')<<16 | c.uint32_t('t')<<8 | c.uint32_t('2')<<0,
+    APPLE_ROMAN    = c.uint32_t('a')<<24 | c.uint32_t('r')<<16 | c.uint32_t('m')<<8 | c.uint32_t('n')<<0,
+    /* for backward compatibility */
+    GB2312     = PRC,
+    MS_SJIS    = SJIS,
+    MS_GB2312  = PRC,
+    MS_BIG5    = BIG5,
+    MS_WANSUNG = WANSUNG,
+    MS_JOHAB   = JOHAB,
 }
 
 Render_Mode:: enum {

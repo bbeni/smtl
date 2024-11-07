@@ -27,18 +27,29 @@ font_print_info :: proc(ttf_file_content: []u8) {
     fmt.printfln("#        Font Summary          #")
     fmt.printfln("================================")
 
-    fmt.printfln("family_name:         %s", face.family_name);
-    fmt.printfln("style_name:          %s", face.style_name);
-    fmt.printfln("num_faces:           %d", face.num_faces);
-    fmt.printfln("num_glyphs:          %d", face.num_glyphs);
-    fmt.printfln("num_charmaps:        %d", face.num_charmaps);
+    fmt.printfln("family_name:         %s", face.family_name)
+    fmt.printfln("style_name:          %s", face.style_name)
+    fmt.printfln("num_faces:           %d", face.num_faces)
+    fmt.printfln("num_glyphs:          %d", face.num_glyphs)
+    fmt.printfln("num_charmaps:        %d", face.num_charmaps)
+    fmt.println( "charmaps:            ")
+    for i in 0..<face.num_charmaps {
+        fmt.print("                     ")
+        p_id := face.charmaps[i].platform_id
+        e_id := face.charmaps[i].encoding_id
+        fmt.printfln("Platform(%d): %s, Encoding(%d): %s",
+                     p_id,
+                     platform_name(p_id),
+                     e_id,
+                     encoding_name(p_id, e_id))
+    }
     fmt.printfln("num_fixed_sizes:     %d", face.num_fixed_sizes);
     fmt.printfln("units_per_EM:        %d", face.units_per_EM);
     fmt.printfln("ascender:            %d", face.ascender);
     fmt.printfln("descender:           %d", face.descender);
     fmt.printfln("underline_position:  %d", face.underline_position);
     fmt.printfln("underline_thickness: %d", face.underline_thickness);
-    fmt.println("")
+    fmt.println( "")
 }
 
 check_or_fail :: proc(err: ft.Error) {
@@ -104,7 +115,7 @@ save_image :: proc(using img: ^Image, out_file: string) {
     image.write_png(strings.clone_to_cstring(out_file), w, h, comp, raw_data(data), w * comp)
 }
 
-draw_bitmap :: proc(img: ^Image, bm: ^ft.Bitmap, left, top: i32) -> bool{
+draw_bitmap :: proc(img: ^Image, bm: ^ft.Bitmap, left, top: i32) -> bool {
     if left < 0 || top < 0 {
         fmt.println("Warning: some things are not drawn as we ran out of space")
         return false
@@ -122,4 +133,5 @@ draw_bitmap :: proc(img: ^Image, bm: ^ft.Bitmap, left, top: i32) -> bool{
             }
         }
     }
+    return true
 }

@@ -35,8 +35,8 @@ main :: proc() {
 
     in_file_name := shift(&args)
     if !strings.ends_with(in_file_name, ".ttf") {
-        usage(program_name)
         // TODO: support other formats
+        usage(program_name)
         fmt.println("Error: font file does not end with .ttf")
         os.exit(1)
     }
@@ -66,5 +66,5 @@ main :: proc() {
             fmt.println("Error: expected -o")
         }
     }
-    
+
 }
