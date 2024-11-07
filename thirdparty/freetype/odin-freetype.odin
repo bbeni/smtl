@@ -6,7 +6,6 @@ import "core:c"
 when ODIN_OS == .Linux do foreign import freetype "linux/lib/libfreetype.a"
 else { #assert(false, "Unsopported OS") }
 
-
 @(default_calling_convention="c")
 foreign freetype {
     // Semi-auto-generated
@@ -83,8 +82,8 @@ Driver :: rawptr
 Face_Internal :: rawptr
 //TODO: Glyph :: ^GlyphRec_
 Glyph :: rawptr
-//TODO: GlyphSlot :: ^GlyphSlotRec_
-GlyphSlot :: rawptr
+GlyphSlot :: ^GlyphSlotRec_
+//GlyphSlot :: rawptr
 //TODO: Incremental :: ^IncrementalRec_
 Incremental :: rawptr
 //TODO: Incremental_Metrics :: ^Incremental_MetricsRec_
@@ -124,6 +123,107 @@ SvgGlyph :: rawptr
 //TODO: WinFNT_Header :: ^WinFNT_HeaderRec_
 WinFNT_Header :: rawptr
 
+
+GlyphSlotRec_ :: struct {
+    library: Library,
+    face: Face,
+    next: GlyphSlot,
+    glyph_index: c.uint, /* new in 2.10: , was reserved previously */
+    generic: Generic,
+
+    metrics: Glyph_Metrics,
+    linearHoriAdvance: Fixed,
+    linearVertAdvance: Fixed,
+    advance: Vector,
+
+    format: Glyph_Format,
+
+    bitmap: Bitmap,
+    bitmap_left: c.int,
+    bitmap_top:  c.int,
+
+    outline: Outline,
+
+    num_subglyphs: c.uint,
+    subglyphs: SubGlyph,
+
+    control_data: rawptr,
+    control_len: c.long,
+
+    lsb_delta: Pos,
+    rsb_delta: Pos,
+
+    other: rawptr,
+    internal: Slot_Internal,
+}
+
+Glyph_Metrics:: struct {
+    width: Pos,
+    height: Pos,
+    horiBearingX: Pos,
+    horiBearingY: Pos,
+    horiAdvance: Pos,
+    vertBearingX: Pos,
+    vertBearingY: Pos,
+    vertAdvance: Pos,
+}
+
+Outline :: struct {
+    n_contours: c.ushort,  /* number of contours in glyph        */
+    n_points: c.ushort,    /* number of points in the glyph      */
+    points: ^Vector,       /* the outline's points               */
+    tags: ^c.uchar,        /* the points flags                   */
+    contours: ^c.short,    /* the contour end points             */
+    flags: c.int,          /* outline masks                      */
+}
+
+Bitmap :: struct {
+    rows: c.uint,
+    width: c.uint,
+    pitch: c.int,
+    buffer: [^]u8,
+    num_grays: c.ushort,
+    pixel_mode: c.uchar,
+    palette_mode: c.uchar,
+    palette: rawptr,
+}
+
+Glyph_Format:: enum c.ulong {
+    NONE      = 0,
+    COMPOSITE = cast(c.ulong)'c' << 24 | cast(c.ulong)'o' << 16 | cast(c.ulong)'m' << 8 | cast(c.ulong)'p',
+    BITMAP    = cast(c.ulong)'b' << 24 | cast(c.ulong)'i' << 16 | cast(c.ulong)'t' << 8 | cast(c.ulong)'s',
+    OUTLINE   = cast(c.ulong)'o' << 24 | cast(c.ulong)'u' << 16 | cast(c.ulong)'t' << 8 | cast(c.ulong)'l',
+    PLOTTER   = cast(c.ulong)'p' << 24 | cast(c.ulong)'l' << 16 | cast(c.ulong)'o' << 8 | cast(c.ulong)'t',
+    SVG       = cast(c.ulong)'S' << 24 | cast(c.ulong)'V' << 16 | cast(c.ulong)'G' << 8 | cast(c.ulong)' '
+}
+
+Load :: enum c.int {
+    DEFAULT                    =  ( 0x0     ),
+    NO_SCALE                   =  ( 1 << 0  ),
+    NO_HINTING                 =  ( 1 << 1  ),
+    RENDER                     =  ( 1 << 2  ),
+    NO_BITMAP                  =  ( 1 << 3  ),
+    VERTICAL_LAYOUT            =  ( 1 << 4  ),
+    FORCE_AUTOHINT             =  ( 1 << 5  ),
+    CROP_BITMAP                =  ( 1 << 6  ),
+    PEDANTIC                   =  ( 1 << 7  ),
+    IGNORE_GLOBAL_ADVANCE_WIDTH=  ( 1 << 9  ),
+    NO_RECURSE                 =  ( 1 << 10 ),
+    IGNORE_TRANSFORM           =  ( 1 << 11 ),
+    MONOCHROME                 =  ( 1 << 12 ),
+    LINEAR_DESIGN              =  ( 1 << 13 ),
+    SBITS_ONLY                 =  ( 1 << 14 ),
+    NO_AUTOHINT                =  ( 1 << 15 ),
+    /* Bits 16-19 are used by `FT_LOAD_TARGET_` */
+    COLOR                      =  ( 1 << 20 ),
+    COMPUTE_METRICS            =  ( 1 << 21 ),
+    BITMAP_METRICS_ONLY        =  ( 1 << 22 ),
+    NO_SVG                     =  ( 1 << 24 ),
+    ADVANCE_ONLY               =  ( 1 << 8  ),
+    SVG_ONLY                   =  ( 1 << 23 ),
+}
+
+
 Encoding :: enum c.uint32_t {
     NONE = 0,
     MS_SYMBOL = c.uint32_t('s') << 24 | c.uint32_t('y') << 16 | c.uint32_t('m') << 8 | c.uint32_t('b') << 0,
@@ -139,7 +239,7 @@ Render_Mode:: enum {
     LCD_V,
     SDF,
 
-    MAX
+    MAX // Maximim
 }
 
 Pos :: c.long;

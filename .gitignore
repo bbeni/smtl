@@ -5,3 +5,4 @@ thirdparty/freetype/linux
 *.tar.xz*
 TAGS
 *.ttf
+*.png
