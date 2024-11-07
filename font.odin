@@ -59,13 +59,12 @@ font_create_map :: proc(ttf_file_content: []u8, out_file: string) {
     check_or_fail(err)
 
     char_height: i64 = 32*64 // in 1/64 points (note: 1 point=1/72 inch)
-    dpi: u32         = 300
+    dpi: u32         = 200
     err = ft.Set_Char_Size(face, 0, char_height, dpi, dpi)
     check_or_fail(err)
 
-
     img: Image
-    init_image(&img)
+    init_image(&img, 3400, 9000)
     pen_x: i32 = 100
     pen_y: i32 = 100
 
@@ -78,7 +77,9 @@ font_create_map :: proc(ttf_file_content: []u8, out_file: string) {
             pen_y += 140 // TODO: make dynamic
             pen_x = 100
         }
-        draw_bitmap(&img, &face.glyph.bitmap, pen_x + face.glyph.bitmap_left, pen_y - face.glyph.bitmap_top)
+        if !draw_bitmap(&img, &face.glyph.bitmap, pen_x + face.glyph.bitmap_left, pen_y - face.glyph.bitmap_top) {
+            break
+        }
         pen_x += i32(face.glyph.advance.x >> 6) + 10
     }
 
@@ -92,9 +93,9 @@ Image :: struct {
     comp: i32,
 }
 
-init_image :: proc(using img: ^Image) {
-    w = 2800 // TODO: adapt to amount of chars and size
-    h = 5800
+init_image :: proc(using img: ^Image, width, height: i32) {
+    w = width // TODO: adapt to amount of chars and size
+    h = height
     comp = 3
     data = make([]u8, w * h * comp)
 }
@@ -103,7 +104,11 @@ save_image :: proc(using img: ^Image, out_file: string) {
     image.write_png(strings.clone_to_cstring(out_file), w, h, comp, raw_data(data), w * comp)
 }
 
-draw_bitmap :: proc(img: ^Image, bm: ^ft.Bitmap, left, top: i32) {
+draw_bitmap :: proc(img: ^Image, bm: ^ft.Bitmap, left, top: i32) -> bool{
+    if left < 0 || top < 0 {
+        fmt.println("Warning: some things are not drawn as we ran out of space")
+        return false
+    }
     assert(left >= 0)
     assert(top >= 0)
     xa: u32 = cast(u32)left
