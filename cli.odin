@@ -50,6 +50,7 @@ main :: proc() {
     if len(args) == 0 {
         // just print infos
         font_print_info(ttf_file_content)
+        return
     }
 
     next_arg := shift(&args)

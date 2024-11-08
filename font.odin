@@ -49,7 +49,6 @@ font_print_info :: proc(ttf_file_content: []u8) {
     fmt.printfln("descender:           %d", face.descender);
     fmt.printfln("underline_position:  %d", face.underline_position);
     fmt.printfln("underline_thickness: %d", face.underline_thickness);
-    fmt.println( "")
 }
 
 check_or_fail :: proc(err: ft.Error) {
