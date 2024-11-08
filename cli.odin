@@ -11,7 +11,9 @@ usage :: proc(program_name: string) {
 descr :: proc() {
     fmt.println("  Show Me Those Letters (smtl) is used to get insights into font files.")
     fmt.println("")
-    fmt.println("  -o  If provided, create an image with all characters in font file")
+    fmt.println("        Without arguments it shows some useful infos about the font.")
+    fmt.println("  -o    If provided, create an image with all glyphs of the font file.")
+    fmt.println("  show  Show all glyphs in a window. Pan with arrow keys.")
 }
 
 main :: proc() {
