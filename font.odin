@@ -59,7 +59,7 @@ check_or_fail :: proc(err: ft.Error) {
     }
 }
 
-font_create_map :: proc(ttf_file_content: []u8, out_file: string) {
+font_render_map :: proc(ttf_file_content: []u8) -> Image {
     library: ft.Library
     face: ft.Face
 
@@ -93,8 +93,17 @@ font_create_map :: proc(ttf_file_content: []u8, out_file: string) {
         }
         pen_x += i32(face.glyph.advance.x >> 6) + 10
     }
+    return img;
+}
 
+font_create_map :: proc(ttf_file_content: []u8, out_file: string) {
+    img := font_render_map(ttf_file_content)
     save_image(&img, out_file)
+}
+
+font_show_map :: proc(ttf_file_content: []u8) {
+    img := font_render_map(ttf_file_content)
+    font_viewer(&img)
 }
 
 Image :: struct {

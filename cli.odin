@@ -5,7 +5,7 @@ import "core:os"
 import "core:strings"
 
 usage :: proc(program_name: string) {
-    fmt.println("Usage: %s font-file.ttf [-o char-map.png]")
+    fmt.printfln("Usage: %s font-file.ttf [show|-o char-map.png]", program_name)
 }
 
 descr :: proc() {
@@ -50,21 +50,21 @@ main :: proc() {
     if len(args) == 0 {
         // just print infos
         font_print_info(ttf_file_content)
-    } else {
-        // parse -o ..
-        next_arg := shift(&args)
-        if next_arg == "-o" {
-            if len(args) == 0 {
-                usage(program_name)
-                fmt.println("Error: no png after -o specified")
-                os.exit(1)
-            }
-            out_file := shift(&args)
-            font_create_map(ttf_file_content, out_file)
-        } else {
-            usage(program_name)
-            fmt.println("Error: expected -o")
-        }
     }
 
+    next_arg := shift(&args)
+    if next_arg == "-o" {
+        if len(args) == 0 {
+            usage(program_name)
+            fmt.println("Error: no png after -o specified")
+            os.exit(1)
+        }
+        out_file := shift(&args)
+        font_create_map(ttf_file_content, out_file)
+    } else if next_arg == "show" {
+        font_show_map(ttf_file_content)
+    } else {
+        usage(program_name)
+        fmt.println("Error: expected -o")
+    }
 }
